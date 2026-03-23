@@ -1,0 +1,66 @@
+<?php
+session_start();
+
+// Initialize cart
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+$message = "";
+
+// Add product
+if (isset($_GET['product'])) {
+    $product = $_GET['product'];
+    $_SESSION['cart'][] = $product;
+    $message = "$product has been added to your cart!";
+}
+
+// Remove product
+if (isset($_GET['remove'])) {
+    $index = $_GET['remove'];
+
+    if (isset($_SESSION['cart'][$index])) {
+        $removedItem = $_SESSION['cart'][$index];
+        unset($_SESSION['cart'][$index]);
+
+        // Re-index array
+        $_SESSION['cart'] = array_values($_SESSION['cart']);
+
+        $message = "$removedItem has been removed from your cart!";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Shop</title>
+</head>
+<body>
+
+<h2>Products</h2>
+
+<ul>
+    <li><a href="?product=Laptop">Laptop</a></li>
+    <li><a href="?product=Headphones">Headphones</a></li>
+    <li><a href="?product=Phone">Phone</a></li>
+</ul>
+
+<?php if ($message): ?>
+    <p style="color: green;"><?php echo $message; ?></p>
+<?php endif; ?>
+
+<h3>Shopping Cart (click item to remove)</h3>
+
+<ul>
+    <?php foreach ($_SESSION['cart'] as $index => $item): ?>
+        <li>
+            <a href="?remove=<?php echo $index; ?>">
+                <?php echo $item; ?>
+            </a>
+        </li>
+    <?php endforeach; ?>
+</ul>
+
+</body>
+</html>
