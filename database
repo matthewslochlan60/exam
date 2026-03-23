@@ -7,3 +7,5 @@ CREATE TABLE IF NOT EXISTS inquiries (
     message TEXT NOT NULL,
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+localhost/index.php to run it on file
