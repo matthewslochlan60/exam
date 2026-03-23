@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bean and Brew About Us</title>
+<style>
+/* --- Coffee Cup Video --- */
+.cup-container {
+  position: absolute;
+  top: 150px;    /* adjust vertical position */
+  right: 20px;   /* distance from right edge */
+  width: 180px;  /* width of cup */
+  height: 220px; /* height of cup */
+  overflow: hidden; /* prevent overflow */
+}
+ 
+.cup-container video {
+  width: 110%; /* slightly bigger to cover area */
+  height: auto;
+  object-fit: cover;
+  object-position: center top; /* adjust as needed */
+  position: relative;
+  top: -15px; /* shift video upwards */
+  left: -5px; /* shift video left */
+  border-radius: 10px; /* optional */
+}
+ 
+.cup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* let video controls work */
+  z-index: 2; /* on top */
+}
+ 
+/* Body background */
+body {
+  background-color: #331a00; 
+  opacity: 1;
+  background-repeat: no-repeat;
+  background-attachment: fixed;  
+  background-size: cover;
+}
+ 
+/* Second video (unchanged) */
+.moveD {
+  position: absolute;
+  top: 435px;
+  left: -4px;
+}
+ 
+.box2 {
+  border: 1px solid;
+  background-color: #4d2600;
+  padding: 30px;
+  box-shadow: 5px #888888;
+  border-radius: 30px;
+}
+ 
+/* Navbar styles */
+nav {
+  background-color: #4d2600;
+  padding: -20px;
+}
+ 
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+ 
+nav a {
+  text-decoration: none;
+  color: #d2a679;
+  font-weight: bold;
+}
+ 
+nav a.active {
+  color: #ffdd99;
+  border-bottom: 2px solid #b36b00;
+}
+ 
+</style>
+</head>
+<body>
+ 
+<!-- Navbar -->
+<nav>
+<ul>
+<li style="font-size:30px"><a href="index.html">Home</a></li>
+<li style="font-size:30px"><a href="About.html" class="active">About us</a></li>
+<li style="font-size:30px"><a href="Menu.html">Menu</a></li>
+<li style="font-size:30px"><a href="Booking.html">Booking</a></li>
+<li style="font-size:30px"><a href="Create.html">Create Account</a></li>
+<li style="font-size:30px"><a href="Contact.html">Contact</a></li>
+</ul>
+</nav>
+ 
+<!-- Coffee Cup Video -->
+<div class="cup-container">
+  <video autoplay muted loop>
+    <source src="Coffee.mp4" type="video/mp4">
+  </video>
+  <img src="/mnt/data/3c17968e-9f69-49a8-b1e5-06f07ee823fe.png" alt="Coffee cup" class="cup-overlay">
+</div>
+ 
+<!-- Second video (unchanged) -->
+<video width="500" height="333" controls autoplay muted loop>
+  <source src="cfvid.mp4" type="video/mp4">
+</video>
+ 
+<!-- About text box -->
+<div class="moveD">
+  <div class="box2">
+    <p style="font-family: 'Constantia'; font-size: 30px; color: #d2a679; text-align: center;">
+      Bean and Brew were one of the first 
+      companies in the UK to use fair-trade coffee 
+      and all organic milk for their products. Each 
+      drink is made exactly to your specifications, 
+      for a personal service.<br><br> They also offer their 
+      trademarked flavoured coffees, breakfast 
+      items such as porridge, small sweet treats, 
+      and pressed sandwiches.<br><br> Recently they’ve also 
+      added frappes and fruit smoothies in addition 
+      to seasonal treats such as the pumpkin spiced 
+      latte (for Halloween) and various assorted 
+      baked goods.
+    </p>
+  </div>
+</div>
+ 
+</body>
+</html>
