@@ -1,0 +1,44 @@
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+            <a href="index.php">
+                <img src="graphics/logo.jpg" alt="Greenfield Local Hub Logo">
+            </a>
+        </div>
+
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about.php">About</a></li>
+            <li><a href="order.php">Order</a></li>
+            <li><a href="contact.php">Contact</a></li>
+            <?php if (isset($_SESSION['username'])): ?>
+                <li><a href="logout.php">Logout</a></li>
+            <?php else: ?>
+                <li><a href="login.php">Login</a></li>
+            <?php endif; ?>
+        </ul>
+    </div>
+</nav>
+
+.nav-container {
+    display: flex;
+    align-items: center; /* Vertically centers logo with text */
+    justify-content: space-between; /* Logo on left, Menu on right */
+    background-color: #00ff00;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.logo img {
+    height: 60px; /* Adjust this to fit your nav bar height */
+    width: auto;  /* Maintains aspect ratio */
+    display: block;
+}
+
+/* Update your existing ul style to remove the background color since the container has it now */
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
