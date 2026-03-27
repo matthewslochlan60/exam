@@ -134,3 +134,42 @@ button[disabled] {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+<?php session_start(); ?>
+<!DOCTYPE html>
+…
+
+<?php 
+session_start(); 
+if(!isset($_SESSION['username'])) {
+    header("Location: login.php"); // Redirects users who aren't logged in
+    exit();
+}
+?>
+<!DOCTYPE html>
+…
+
+<?php
+session_start(); // Access the current session
+session_unset(); // Remove all session variables
+session_destroy(); // Destroy the session entirely
+
+header("Location: index.php"); // Redirect to home page
+exit();
+?>
+
+<ul>
+    <li><a href="index.php">Home</a></li>
+    <li><a href="about.php">About</a></li>
+    <li><a href="order.php">Order</a></li>
+    <li><a href="contact.php">Contact</a></li>
+
+    <?php if (isset($_SESSION['username'])): ?>
+        <?php if ($_SESSION['role'] == 'producer'): ?>
+            <li><a href="dashboard.php">Dashboard</a></li>
+        <?php endif; ?>
+        <li><a href="logout.php" style="color: red;">Logout (<?php echo $_SESSION['username']; ?>)</a></li>
+    <?php else: ?>
+        <li><a href="login.php">Login</a></li>
+    <?php endif; ?>
+</ul>
