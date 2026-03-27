@@ -38,7 +38,7 @@
                 x: canvas.width,
                 y: Math.random() * (canvas.height - size),
                 size: size,
-                speed: Math.random() * 3 + 2,
+                speed: Math.random() * 4 + 8,
                 color: "#FF4444"
             });
         }
@@ -58,7 +58,7 @@
             if (keys["ArrowRight"] && player.x < canvas.width - player.size) player.x += player.speed;
 
             // Manage enemies
-            if (Math.random() < 0.02) createEnemy();
+            if (Math.random() < 0.07) createEnemy();
 
             enemies.forEach((enemy, index) => {
                 enemy.x -= enemy.speed;
