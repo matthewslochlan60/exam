@@ -1,0 +1,171 @@
+order
+<div class="order-item">
+    <p>Wheat - £2.50</p>
+    <img src="images/Wheat.jpg" alt="Wheat" width="80">
+    <a href="cart.php?add=Wheat" class="btn">Add to Cart</a>
+</div>
+update cart
+// Logic to handle adding items
+if (isset($_GET['add'])) {
+    $productToAdd = $_GET['add'];
+    if (array_key_exists($productToAdd, $products)) {
+        if (isset($_SESSION['cart'][$productToAdd])) {
+            $_SESSION['cart'][$productToAdd]++;
+        } else {
+            $_SESSION['cart'][$productToAdd] = 1;
+        }
+    }
+    // Redirect to same page to clear the GET parameter
+    header("Location: cart.php");
+    exit();
+}
+
+dashboard
+if (!isset($_SESSION['inventory'])) {
+    $_SESSION['inventory'] = [
+        "Organic Wheat" => 50,
+        "Award-winning Sausages" => 25
+    ];
+}
+
+// Handle Update
+if (isset($_POST['update_stock'])) {
+    $prod = $_POST['prod_name'];
+    $newVal = $_POST['new_level'];
+    $_SESSION['inventory'][$prod] = $newVal;
+}
+in table
+<?php foreach ($_SESSION['inventory'] as $name => $stock): ?>
+<tr>
+    <td><?php echo $name; ?></td>
+    <td><?php echo $stock; ?></td>
+    <form method="POST">
+        <td>
+            <input type="hidden" name="prod_name" value="<?php echo $name; ?>">
+            <input type="number" name="new_level" value="<?php echo $stock; ?>" style="width: 50px;">
+        </td>
+        <td><button type="submit" name="update_stock" class="btn">Update</button></td>
+    </form>
+</tr>
+<?php endforeach; ?>
+
+cart 
+function confirmAdd(itemName, price) {
+    if (confirm("Add " + itemName + " to cart?")) {
+        window.location.href = "cart.php?add=" + itemName;
+    }
+}
+
+sql
+CREATE TABLE users (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('customer', 'producer') NOT NULL
+);
+
+
+login
+<?php
+session_start();
+
+// Database Connection Details
+$host = "localhost";
+$db_user = "root"; // Default for XAMPP
+$db_pass = "";     // Default for XAMPP
+$db_name = "glh_database";
+
+$conn = new mysqli($host, $db_user, $db_pass, $db_name);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user = htmlspecialchars(trim($_POST['username']));
+    $pass = $_POST['password'];
+    $role = $_POST['role'];
+
+    // --- REGISTRATION LOGIC ---
+    if (isset($_POST['register'])) {
+        // Securely hash the password
+        $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
+        
+        $sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $user, $hashed_pass, $role);
+
+        if ($stmt->execute()) {
+            $message = "Registration successful! You can now login.";
+        } else {
+            $message = "Error: User already exists.";
+        }
+    }
+
+    // --- LOGIN LOGIC ---
+    if (isset($_POST['login'])) {
+        $sql = "SELECT password, role FROM users WHERE username = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            // Verify the entered password against the hashed password in the DB
+            if (password_verify($pass, $row['password'])) {
+                $_SESSION['username'] = $user;
+                $_SESSION['role'] = $row['role'];
+
+                if ($row['role'] == 'producer') {
+                    header("Location: dashboard.php");
+                } else {
+                    header("Location: order.php");
+                }
+                exit();
+            } else {
+                $message = "Invalid password.";
+            }
+        } else {
+            $message = "No user found with that username.";
+        }
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GLH | Login & Register</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="lbox" style="height: auto; padding: 20px; margin: 50px auto; width: 400px; color: white;">
+    <h2>Member Access</h2>
+    
+    <?php if($message): ?>
+        <p style="background: #ffcc00; color: black; padding: 5px;"><?php echo $message; ?></p>
+    <?php endif; ?>
+
+    <form method="POST">
+        <label>Username:</label><br>
+        <input type="text" name="username" required style="width: 90%;"><br><br>
+
+        <label>Password:</label><br>
+        <input type="password" name="password" required style="width: 90%;"><br><br>
+
+        <label>Select Role:</label><br>
+        <select name="role" style="width: 90%; padding: 5px;">
+            <option value="customer">Customer</option>
+            <option value="producer">Producer</option>
+        </select><br><br>
+
+        <button type="submit" name="login" class="btn">Login</button>
+        <button type="submit" name="register" class="btn" style="background-color: #4CAF50;">Register</button>
+    </form>
+</div>
+
+</body>
+</html>
