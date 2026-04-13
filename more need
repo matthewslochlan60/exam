@@ -1,0 +1,184 @@
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    producer_username VARCHAR(50),
+    product_name VARCHAR(100),
+    stock_level INT,
+    FOREIGN KEY (producer_username) REFERENCES users(username)
+);
+
+dashboard
+<?php
+session_start();
+// Database connection
+$conn = new mysqli("localhost", "root", "", "glh_database");
+
+// Security: Only producers allowed
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'producer') {
+    header("Location: login.php");
+    exit();
+}
+
+$current_user = $_SESSION['username'];
+
+// Handle the update request
+if (isset($_POST['update_stock'])) {
+    $newVal = (int)$_POST['new_level'];
+    $prodName = $_POST['prod_name'];
+    
+    $update_sql = "UPDATE products SET stock_level = ? WHERE product_name = ? AND producer_username = ?";
+    $stmt = $conn->prepare($update_sql);
+    $stmt->bind_param("iss", $newVal, $prodName, $current_user);
+    $stmt->execute();
+}
+
+// Fetch only THIS producer's items
+$sql = "SELECT product_name, stock_level FROM products WHERE producer_username = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $current_user);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Producer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="dashboard.php" class="active">Dashboard</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="box">
+    <h1>Producer Dashboard</h1>
+    <p>Logged in as: <strong><?php echo htmlspecialchars($current_user); ?></strong></p>
+</div>
+
+<div class="lbox" style="width: 80%; height: auto; margin: 20px auto; padding: 20px;">
+    <h3>Your Stock Management</h3>
+    <table style="width: 100%; color: white;">
+        <tr style="border-bottom: 1px solid white;">
+            <th>Product Name</th>
+            <th>Current Stock</th>
+            <th>Update Level</th>
+            <th>Action</th>
+        </tr>
+        
+        <?php if ($result->num_rows > 0): ?>
+            <?php while($row = $result->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $row['product_name']; ?></td>
+                <td><?php echo $row['stock_level']; ?></td>
+                <form method="POST">
+                    <td>
+                        <input type="hidden" name="prod_name" value="<?php echo $row['product_name']; ?>">
+                        <input type="number" name="new_level" value="<?php echo $row['stock_level']; ?>" style="width: 60px;">
+                    </td>
+                    <td><button type="submit" name="update_stock" class="btn">Update</button></td>
+                </form>
+            </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="4">No products found for your account.</td></tr>
+        <?php endif; ?>
+    </table>
+</div>
+
+</body>
+</html><?php
+session_start();
+// Database connection
+$conn = new mysqli("localhost", "root", "", "glh_database");
+
+// Security: Only producers allowed
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'producer') {
+    header("Location: login.php");
+    exit();
+}
+
+$current_user = $_SESSION['username'];
+
+// Handle the update request
+if (isset($_POST['update_stock'])) {
+    $newVal = (int)$_POST['new_level'];
+    $prodName = $_POST['prod_name'];
+    
+    $update_sql = "UPDATE products SET stock_level = ? WHERE product_name = ? AND producer_username = ?";
+    $stmt = $conn->prepare($update_sql);
+    $stmt->bind_param("iss", $newVal, $prodName, $current_user);
+    $stmt->execute();
+}
+
+// Fetch only THIS producer's items
+$sql = "SELECT product_name, stock_level FROM products WHERE producer_username = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $current_user);
+$stmt->execute();
+$result = $stmt->get_result();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Producer Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="dashboard.php" class="active">Dashboard</a></li>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="box">
+    <h1>Producer Dashboard</h1>
+    <p>Logged in as: <strong><?php echo htmlspecialchars($current_user); ?></strong></p>
+</div>
+
+<div class="lbox" style="width: 80%; height: auto; margin: 20px auto; padding: 20px;">
+    <h3>Your Stock Management</h3>
+    <table style="width: 100%; color: white;">
+        <tr style="border-bottom: 1px solid white;">
+            <th>Product Name</th>
+            <th>Current Stock</th>
+            <th>Update Level</th>
+            <th>Action</th>
+        </tr>
+        
+        <?php if ($result->num_rows > 0): ?>
+            <?php while($row = $result->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $row['product_name']; ?></td>
+                <td><?php echo $row['stock_level']; ?></td>
+                <form method="POST">
+                    <td>
+                        <input type="hidden" name="prod_name" value="<?php echo $row['product_name']; ?>">
+                        <input type="number" name="new_level" value="<?php echo $row['stock_level']; ?>" style="width: 60px;">
+                    </td>
+                    <td><button type="submit" name="update_stock" class="btn">Update</button></td>
+                </form>
+            </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="4">No products found for your account.</td></tr>
+        <?php endif; ?>
+    </table>
+</div>
+
+</body>
+</html>
