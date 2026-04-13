@@ -180,5 +180,152 @@ $result = $stmt->get_result();
     </table>
 </div>
 
+
+
 </body>
 </html>
+
+Replace the top section of your cart.php with this. It now handles the add logic directly and forces everything to lowercase to prevent mismatches.
+
+PHP
+<?php
+session_start();
+
+$products = [
+    "wheat" => 2.50,
+    "sausages" => 5.00
+];
+
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+// FIX: Handle adding items (moved logic from order.php to here)
+if (isset($_GET['add'])) {
+    $productToAdd = strtolower($_GET['add']); // Force lowercase
+    if (array_key_exists($productToAdd, $products)) {
+        if (isset($_SESSION['cart'][$productToAdd])) {
+            $_SESSION['cart'][$productToAdd]++;
+        } else {
+            $_SESSION['cart'][$productToAdd] = 1;
+        }
+    }
+    header("Location: cart.php");
+    exit();
+}
+
+// Remove
+if (isset($_GET['remove'])) {
+    unset($_SESSION['cart'][$_GET['remove']]);
+}
+?>
+
+about
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>About Our Producers | GLH</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .producer-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+        .producer-card {
+            background: white;
+            border: 2px solid #2d5a27;
+            border-radius: 10px;
+            width: 350px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .producer-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .producer-info {
+            padding: 15px;
+        }
+        .producer-info h3 {
+            color: #2d5a27;
+            margin-top: 0;
+        }
+        .tag {
+            display: inline-block;
+            background: #e0ffdf;
+            color: #2d5a27;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
+        <ul>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about.php" class="active">About</a></li>
+            <li><a href="order.php">Order</a></li>
+            <li><a href="contact.php">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="box" style="width: 80%; height: auto; text-align: center; padding: 20px;">
+    <h1>Meet Our Local Producers</h1>
+    <p>We pride ourselves on traceability and supporting local Greenfield farmers.</p>
+</div>
+
+<div class="producer-container">
+    <div class="producer-card">
+        <img src="images/harrod.jpg" alt="Harrop's Farm">
+        <div class="producer-info">
+            <span class="tag">Butchery & Deli</span>
+            <h3>Harrop's Farm Shop</h3>
+            <p>Traditional local retailers focusing on high-quality butchery and food safety. Famous for their traditional pies and seasonal baked goods.</p>
+        </div>
+    </div>
+
+    <div class="producer-card">
+        <img src="images/Cfarms.jpg" alt="Cockfield's Farm">
+        <div class="producer-info">
+            <span class="tag">Family Attraction & Produce</span>
+            <h3>Cockfield's Farm Park</h3>
+            <p>An interactive family attraction. Beyond animal encounters, they provide fresh seasonal produce and host "Lambing Live" events every spring.</p>
+        </div>
+    </div>
+
+    <div class="producer-card">
+        <img src="images/local1.jpg" alt="Greenfield Farm">
+        <div class="producer-info">
+            <span class="tag">Award Winning</span>
+            <h3>Greenfield Farm Shop</h3>
+            <p>Home of the "Champion of Champions" sausages. For 30 years, they have provided Hampshire with the finest free-range pork and artisan staples.</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+Ensure your JavaScript matches the forced lowercase in the cart. Update your script in order.php to this:
+
+JavaScript
+function confirmAdd(itemName, price) {
+    // We send lowercase names to match our $products array in cart.php
+    let itemKey = itemName.toLowerCase(); 
+    
+    let check = confirm("Would you like to add " + itemName + " (£" + price.toFixed(2) + ") to your cart?");
+    if (check) {
+        window.location.href = "cart.php?add=" + itemKey;
+    }
+}
