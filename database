@@ -10,3 +10,81 @@ CREATE TABLE IF NOT EXISTS inquiries (
 
 localhost/index.php to run it on file
 localhost/filename.php
+
+
+format index page so it looks better
+<?php session_start(); 
+$host = "localhost";
+$db_user = "root"; // Default for XAMPP
+$db_pass = "";     // Default for XAMPP
+$db_name = "glh_database";
+
+$conn = new mysqli($host, $db_user, $db_pass, $db_name);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$message = "";?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Greenfield Local Hub| Home</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+	        <img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
+    <ul>
+        <li style="font-size:30px; font-weight: bold;"><a href="index.php" class="active">Home</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="login.php">Login</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="order.php">Order</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="contact.php">Contact</a></li>
+        <li class="dropdown" style="font-size:30px">
+            <a href="login.php">
+            <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
+            </a>
+            <div class="dropdown-content">
+                <?php if(isset($_SESSION['username'])): ?>
+                    <a href="logout.php">Logout</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        </li>
+    </ul>
+    </div>
+</nav>
+
+<div class="box">
+        <h1 style="font-size:25px">Why Buy Local Food?</h1>
+</div>
+	<h2> Local food can be better for your health for a few reasons. To begin with, local foods often retain more nutrients. Local produce is allowed to ripen naturally, while food that travels long distances is often picked before it’s ripe. And food picked fresh and in season doesn’t have far to travel before being sold.
+<br>
+Choosing fruits and vegetables grown in season may also be healthier. When researchers at Montclair State University compared the vitamin C content of broccoli grown in season with broccoli imported out of season, they found the latter had only half the vitamin C.
+<br>
+In addition, locally grown produce may be safer. When they are imported and out of season, fruits like tomatoes, bananas, and pears are often picked unripe. And then, they are artificially “ripened” with ethylene gas.</h2>
+<h2>Why Buy Local Food? It Can Be Better for the Environment
+Food is one of the leading drivers of climate change.
+<br>
+Eating more local food reduces CO2 emissions by reducing food miles — the distance food travels from farm to consumer. The average piece of produce in the U.S. travels 1,500 miles, while local food may only travel 100 miles (or less), according to researcher Rich Pirog at the Leopold Center for Sustainable Agriculture at Iowa State University.
+<br>
+Local food helps preserve green space. When local farmers are well compensated for their products, they are less likely to sell their land to developers. Likewise, with growing consumer demand, young farmers are increasingly likely to enter the marketplace by developing unused space, such as empty lots, into thriving urban gardens — many of which are grown organically.
+<br>
+Eating more local food can be one part of the solution. But, local is not the whole picture of food sustainability. The impact our food choices have on the environment includes many factors.
+<br>
+In some cases, food produced farther away may be more sustainable if it’s grown more responsibly, if it carries a smaller ecological footprint, or if it’s in season.
+</h2>
+<h2>Other Reasons Why It’s Important to Buy Local Foods
+Health and sustainability are two excellent reasons to eat more local food. But they’re not the only reasons. Here are some surprising, and not-so-surprising, benefits:
+<br>
+Fresher food tastes better – When food is picked and eaten at the peak of freshness, it not only retains more nutrients, it also tastes better.
+Small, local farms offer more variety. Our industrial agricultural system uses a monocrop system. But smaller, organic farmers may grow a variety of organic and heirloom produce, which you might not find at the supermarket.
+Supporting local food aids your local economy. By choosing food produced locally, you’re supporting your community, and you help keep local producers in business.</h2>
+<img src="graphics/farm.jpg" alt="Farm">
+</body>
+</html>
