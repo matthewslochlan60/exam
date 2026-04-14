@@ -1,193 +1,4 @@
-CREATE TABLE products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    producer_username VARCHAR(50),
-    product_name VARCHAR(100),
-    stock_level INT,
-    FOREIGN KEY (producer_username) REFERENCES users(username)
-);
-
-dashboard
-<?php
-session_start();
-// Database connection
-$conn = new mysqli("localhost", "root", "", "glh_database");
-
-// Security: Only producers allowed
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'producer') {
-    header("Location: login.php");
-    exit();
-}
-
-$current_user = $_SESSION['username'];
-
-// Handle the update request
-if (isset($_POST['update_stock'])) {
-    $newVal = (int)$_POST['new_level'];
-    $prodName = $_POST['prod_name'];
-    
-    $update_sql = "UPDATE products SET stock_level = ? WHERE product_name = ? AND producer_username = ?";
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("iss", $newVal, $prodName, $current_user);
-    $stmt->execute();
-}
-
-// Fetch only THIS producer's items
-$sql = "SELECT product_name, stock_level FROM products WHERE producer_username = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $current_user);
-$stmt->execute();
-$result = $stmt->get_result();
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Producer Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<nav>
-    <div class="nav-container">
-        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="dashboard.php" class="active">Dashboard</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
-    </div>
-</nav>
-
-<div class="box">
-    <h1>Producer Dashboard</h1>
-    <p>Logged in as: <strong><?php echo htmlspecialchars($current_user); ?></strong></p>
-</div>
-
-<div class="lbox" style="width: 80%; height: auto; margin: 20px auto; padding: 20px;">
-    <h3>Your Stock Management</h3>
-    <table style="width: 100%; color: white;">
-        <tr style="border-bottom: 1px solid white;">
-            <th>Product Name</th>
-            <th>Current Stock</th>
-            <th>Update Level</th>
-            <th>Action</th>
-        </tr>
-        
-        <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?php echo $row['product_name']; ?></td>
-                <td><?php echo $row['stock_level']; ?></td>
-                <form method="POST">
-                    <td>
-                        <input type="hidden" name="prod_name" value="<?php echo $row['product_name']; ?>">
-                        <input type="number" name="new_level" value="<?php echo $row['stock_level']; ?>" style="width: 60px;">
-                    </td>
-                    <td><button type="submit" name="update_stock" class="btn">Update</button></td>
-                </form>
-            </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="4">No products found for your account.</td></tr>
-        <?php endif; ?>
-    </table>
-</div>
-
-</body>
-</html><?php
-session_start();
-// Database connection
-$conn = new mysqli("localhost", "root", "", "glh_database");
-
-// Security: Only producers allowed
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'producer') {
-    header("Location: login.php");
-    exit();
-}
-
-$current_user = $_SESSION['username'];
-
-// Handle the update request
-if (isset($_POST['update_stock'])) {
-    $newVal = (int)$_POST['new_level'];
-    $prodName = $_POST['prod_name'];
-    
-    $update_sql = "UPDATE products SET stock_level = ? WHERE product_name = ? AND producer_username = ?";
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("iss", $newVal, $prodName, $current_user);
-    $stmt->execute();
-}
-
-// Fetch only THIS producer's items
-$sql = "SELECT product_name, stock_level FROM products WHERE producer_username = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $current_user);
-$stmt->execute();
-$result = $stmt->get_result();
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Producer Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<nav>
-    <div class="nav-container">
-        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="dashboard.php" class="active">Dashboard</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
-    </div>
-</nav>
-
-<div class="box">
-    <h1>Producer Dashboard</h1>
-    <p>Logged in as: <strong><?php echo htmlspecialchars($current_user); ?></strong></p>
-</div>
-
-<div class="lbox" style="width: 80%; height: auto; margin: 20px auto; padding: 20px;">
-    <h3>Your Stock Management</h3>
-    <table style="width: 100%; color: white;">
-        <tr style="border-bottom: 1px solid white;">
-            <th>Product Name</th>
-            <th>Current Stock</th>
-            <th>Update Level</th>
-            <th>Action</th>
-        </tr>
-        
-        <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?php echo $row['product_name']; ?></td>
-                <td><?php echo $row['stock_level']; ?></td>
-                <form method="POST">
-                    <td>
-                        <input type="hidden" name="prod_name" value="<?php echo $row['product_name']; ?>">
-                        <input type="number" name="new_level" value="<?php echo $row['stock_level']; ?>" style="width: 60px;">
-                    </td>
-                    <td><button type="submit" name="update_stock" class="btn">Update</button></td>
-                </form>
-            </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="4">No products found for your account.</td></tr>
-        <?php endif; ?>
-    </table>
-</div>
-
-
-
-</body>
-</html>
-
-Replace the top section of your cart.php with this. It now handles the add logic directly and forces everything to lowercase to prevent mismatches.
-
-PHP
+Cart wont update
 <?php
 session_start();
 
@@ -220,112 +31,139 @@ if (isset($_GET['remove'])) {
 }
 ?>
 
-about
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>About Our Producers | GLH</title>
+     <title>Greenfield Local Hub | Order</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .producer-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
-            justify-content: center;
-        }
-        .producer-card {
-            background: white;
-            border: 2px solid #2d5a27;
-            border-radius: 10px;
-            width: 350px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .producer-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .producer-info {
-            padding: 15px;
-        }
-        .producer-info h3 {
-            color: #2d5a27;
-            margin-top: 0;
-        }
-        .tag {
-            display: inline-block;
-            background: #e0ffdf;
-            color: #2d5a27;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; }
+        td, th { padding: 8px; border: 1px solid #ccc; }
+        button { margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="nav-container">
-        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <li><a href="about.php" class="active">About</a></li>
-            <li><a href="order.php">Order</a></li>
-            <li><a href="contact.php">Contact</a></li>
-        </ul>
-    </div>
-</nav>
+<h2>Your Cart</h2>
 
-<div class="box" style="width: 80%; height: auto; text-align: center; padding: 20px;">
-    <h1>Meet Our Local Producers</h1>
-    <p>We pride ourselves on traceability and supporting local Greenfield farmers.</p>
-</div>
+<?php if (empty($_SESSION['cart'])): ?>
+    <p>Your cart is empty.</p>
+<?php else: ?>
 
-<div class="producer-container">
-    <div class="producer-card">
-        <img src="images/harrod.jpg" alt="Harrop's Farm">
-        <div class="producer-info">
-            <span class="tag">Butchery & Deli</span>
-            <h3>Harrop's Farm Shop</h3>
-            <p>Traditional local retailers focusing on high-quality butchery and food safety. Famous for their traditional pies and seasonal baked goods.</p>
-        </div>
-    </div>
+<form method="post">
+<table>
+<tr>
+    <th>Product</th>
+    <th>Price</th>
+    <th>Qty</th>
+    <th>Total</th>
+    <th></th>
+</tr>
 
-    <div class="producer-card">
-        <img src="images/Cfarms.jpg" alt="Cockfield's Farm">
-        <div class="producer-info">
-            <span class="tag">Family Attraction & Produce</span>
-            <h3>Cockfield's Farm Park</h3>
-            <p>An interactive family attraction. Beyond animal encounters, they provide fresh seasonal produce and host "Lambing Live" events every spring.</p>
-        </div>
-    </div>
+<?php
+$total = 0;
+foreach ($_SESSION['cart'] as $product => $qty):
+    $price = $products[$product];
+    $sub = $price * $qty;
+    $total += $sub;
+?>
 
-    <div class="producer-card">
-        <img src="images/local1.jpg" alt="Greenfield Farm">
-        <div class="producer-info">
-            <span class="tag">Award Winning</span>
-            <h3>Greenfield Farm Shop</h3>
-            <p>Home of the "Champion of Champions" sausages. For 30 years, they have provided Hampshire with the finest free-range pork and artisan staples.</p>
-        </div>
-    </div>
-</div>
+<tr>
+    <td><?php echo $product; ?></td>
+    <td>£<?php echo $price; ?></td>
+    <td>
+        <input type="number" name="qty[<?php echo $product; ?>]" value="<?php echo $qty; ?>" style="width:50px;">
+    </td>
+    <td>£<?php echo $sub; ?></td>
+    <td><a href="?remove=<?php echo $product; ?>">Remove</a></td>
+</tr>
+
+<?php endforeach; ?>
+
+<tr>
+    <td colspan="3"><strong>Total</strong></td>
+    <td colspan="2">£<?php echo $total; ?></td>
+</tr>
+
+</table>
+
+<button name="update">Update Cart</button>
+</form>
+
+<br>
+<a href="checkout.php">Proceed to Checkout</a>
+
+<?php endif; ?>
+
+<br><br>
+<a href="order.php">Back to Products</a>
 
 </body>
 </html>
+also need process.php for checkout
+<?php
+session_start();
 
-Ensure your JavaScript matches the forced lowercase in the cart. Update your script in order.php to this:
-
-JavaScript
-function confirmAdd(itemName, price) {
-    // We send lowercase names to match our $products array in cart.php
-    let itemKey = itemName.toLowerCase(); 
-    
-    let check = confirm("Would you like to add " + itemName + " (£" + price.toFixed(2) + ") to your cart?");
-    if (check) {
-        window.location.href = "cart.php?add=" + itemKey;
-    }
+if (empty($_SESSION['cart'])) {
+    echo "Cart is empty.";
+    exit;
 }
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        input { margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+<h2>Checkout</h2>
+
+<form method="post" action="process.php">
+
+    Name:
+    <input type="text" name="name" required>
+
+    Card Number:
+    <input 
+        type="text" 
+        name="card" 
+        pattern="\d{12}" 
+        maxlength="12"
+        placeholder="12 digits"
+        title="Card number must be exactly 12 digits"
+        required
+    >
+
+    Expiry (MM/YY):
+    <input 
+        type="text" 
+        name="expiry" 
+        pattern="(0[1-9]|1[0-2])\/\d{2}" 
+        placeholder="MM/YY"
+        title="Format must be MM/YY"
+        required
+    >
+
+    CVV:
+    <input 
+        type="text" 
+        name="cvv" 
+        pattern="\d{3}" 
+        maxlength="3"
+        placeholder="3 digits"
+        title="CVV must be 3 digits"
+        required
+    >
+
+    <button type="submit">Pay</button>
+
+</form>
+
+</body>
+</html>
