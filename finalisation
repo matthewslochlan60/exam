@@ -1,0 +1,187 @@
+space the menues away from each other but keep drop down move the buttons you hover over further apart
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Greenfield Local Hub | Order</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+ <div class="nav-container">
+        <div class="logo">
+	<img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
+    <ul>
+        <li style="font-size:30px; font-weight: bold;"><a href="index.php">Home</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="login.php">Login</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="order.php" class="active">Order</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="cart.php">Cart</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="contact.php">Contact</a></li>
+        <li class="dropdown" style="font-size:30px">
+            <a href="login.php">
+                         <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
+            </a>
+            <div class="dropdown-content">
+                <?php if(isset($_SESSION['username'])): ?>
+                    <a href="logout.php">Logout</a>
+                <?php endif; ?>
+	</div>
+        </li>
+    </ul>
+</div>
+</nav>
+
+<h2>Select Items for Collection</h2>
+
+<div class="dropdown">
+  <button class="dropbtn">Grains & Pantry</button>
+  <div class="dropdown-content">
+    <div class="order-item" onclick="confirmAdd('Wheat', 2.50)">
+        <p>Wheat - £2.50</p>
+        <img src="images/Wheat.jpg" alt="Wheat" width="80">
+    </div>
+        <div class="order-item" onclick="confirmAdd('Apple', 1.25)">
+        <p>Apple - £1.25</p>
+        <img src="images/apple.jpg" alt="apple" width="80">
+    </div>
+        <div class="order-item" onclick="confirmAdd('Orange', 1.75)">
+        <p>Orange - £1.75</p>
+        <img src="images/orange.jpg" alt="orange" width="80">
+    </div>    <div class="order-item" onclick="confirmAdd('Carrot', 1.75)">
+        <p>Carrot - £1.75</p>
+        <img src="images/carrot.jpg" alt="carrot" width="80">
+    </div>    
+    <div class="order-item" onclick="confirmAdd('Corn', 2.45)">
+        <p>Corn - £2.45</p>
+        <img src="images/corn.jpg" alt="corn" width="80">
+    </div>
+   </div>
+</div>
+
+<div class="dropdown">
+  <button class="dropbtn">Meat & Deli</button>
+  <div class="dropdown-content">
+    <div class="order-item" onclick="confirmAdd('Sausages', 5.00)">
+        <p>Sausages - £5.00</p>
+        <img src="images/sausage.jpg" alt="Sausages" width="80">
+    </div>
+            <div class="order-item" onclick="confirmAdd('Steak', 6.00)">
+        <p>Steak - £6.00</p>
+        <img src="images/steak.jpg" alt="steak" width="80">
+    </div>
+            <div class="order-item" onclick="confirmAdd('Porkchop', 6.50)">
+        <p>Porkchop - £6.50</p>
+        <img src="images/porkchop.jpg" alt="pork" width="80">
+    </div>
+            <div class="order-item" onclick="confirmAdd('Ham', 1.50)">
+        <p>Ham - £1.50</p>
+        <img src="images/ham.jpg" alt="ham" width="80">
+    </div>
+            <div class="order-item" onclick="confirmAdd('Chicken', 10.00)">
+        <p>Chicken - £10.00</p>
+        <img src="images/chicken.jpg" alt="chicken" width="80">
+    </div>
+            <div class="order-item" onclick="confirmAdd('Bacon', 3.85)">
+        <p>Bacon - £3.85</p>
+        <img src="images/bacon.jpg" alt="bacon" width="80">
+    </div>
+  </div>
+</div>
+<?php
+// Logic to handle adding items
+if (isset($_GET['add'])) {
+    $productToAdd = $_GET['add'];
+    if (array_key_exists($productToAdd, $products)) {
+        if (isset($_SESSION['cart'][$productToAdd])) {
+            $_SESSION['cart'][$productToAdd]++;
+        } else {
+            $_SESSION['cart'][$productToAdd] = 1;
+        }
+    }
+    // Redirect to same page to clear the GET parameter
+    header("Location: cart.php");
+    exit();
+}
+?>
+
+<script>
+function confirmAdd(itemName, price) {
+    // We send lowercase names to match our $products array in cart.php
+    let itemKey = itemName.toLowerCase(); 
+    
+    let check = confirm("Would you like to add " + itemName + " (£" + price.toFixed(2) + ") to your cart?");
+    if (check) {
+        window.location.href = "cart.php?add=" + itemKey;
+    }
+}
+
+</script>
+
+<style>
+/* Local style for the order items inside dropdowns */
+.order-item {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    color: black;
+}
+.order-item:hover { background: #e0ffdf; }
+</style>
+</body>
+</html>
+make contact form using the layout given
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Greenfield Local Hub| Contact Us</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+    <div class="nav-container">
+        <div class="logo">
+	        <img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
+    <ul>
+        <li style="font-size:30px; font-weight: bold;"><a href="index.php">Home</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="login.php">Login</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="order.php">Order</a></li>
+        <li style="font-size:30px; font-weight: bold;"><a href="contact.php" class="active">Contact</a></li>
+        <li class="dropdown" style="font-size:30px">
+            <a href="login.php">
+            <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
+            </a>
+            <div class="dropdown-content">
+                <?php if(isset($_SESSION['username'])): ?>
+                    <a href="logout.php">Logout</a>
+                <?php endif; ?>
+            </div>
+        </div>
+        </li>
+    </ul>
+    </div>
+</nav>
+<div class="box" style="width: auto; height: auto;">
+       <h3 style = "font-size:30px; font-weight: bold;">Who to contact</h3>
+
+
+    <div class="lbox" style="width: 80%; height: auto; margin: 20px auto; padding: 20px;">
+        <p style = "font-size:15px; font-weight: bold;"></p>
+        <br>
+        <p style = "font-size:15px; font-weight: bold;"></p>
+        <br>
+        <p style = "font-size:15px; font-weight: bold;"></p>
+        <br>
+        <p style = "font-size:15px; font-weight: bold;"></p>
+        <br>
+    </div>
+</div>
+</body>
+</html>
