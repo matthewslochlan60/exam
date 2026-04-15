@@ -1,4 +1,4 @@
-space the menues away from each other but keep drop down move the buttons you hover over further apart aswell as make it so when you aree to place item in your cart it dont send you to cart only the item
+space the menues away from each other but keep drop down feature move the buttons you hover over further apart aswell as make it so when you aree to place item in your cart it dont send you to cart only the item
 <?php session_start(); ?>
 <!DOCTYPE html>
 <html>
