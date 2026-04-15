@@ -101,3 +101,31 @@ foreach ($_SESSION['cart'] as $product => $qty):
 
 </body>
 </html>
+
+
+// --- REGISTRATION LOGIC ---
+if (isset($_POST['register'])) {
+    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
+    
+    // 1. Insert the new user
+    $sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $user, $hashed_pass, $role);
+
+    if ($stmt->execute()) {
+        // 2. If they are a producer, initialize their stock to zero
+        if ($role == 'producer') {
+            $default_products = ['Organic Wheat', 'Award-winning Sausages', 'Local Honey'];
+            
+            foreach ($default_products as $product) {
+                $stock_sql = "INSERT INTO products (producer_username, product_name, stock_level) VALUES (?, ?, 0)";
+                $stock_stmt = $conn->prepare($stock_sql);
+                $stock_stmt->bind_param("ss", $user, $product);
+                $stock_stmt->execute();
+            }
+        }
+        $message = "Registration successful! You can now login.";
+    } else {
+        $message = "Error: User already exists.";
+    }
+}
