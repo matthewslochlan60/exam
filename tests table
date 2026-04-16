@@ -1,0 +1,61 @@
+Registration Role Test: Registered a new user as a 'Producer'. The system successfully created the account in the users table and automatically generated three blank stock rows in the products table.
+
+Duplicate User Test: Attempted to register a username that already exists. The system blocked the attempt and displayed "Error: User already exists."
+
+Login Authentication Test: Logged in with a correct username and password. The system identified the user and redirected them to the correct landing page.
+
+Incorrect Password Test: Entered the wrong password for an existing account. The system denied access and displayed "Invalid password."
+
+Direct URL Access Test: Attempted to go to dashboard.php by typing the address manually while logged out. The security check caught the empty session and redirected to the login page.
+
+Cross-Role Security Test: Logged in as a 'Customer' and tried to access the Producer's dashboard.php. The system identified the incorrect role and denied access.
+
+Navigation Link Test: Clicked the 'Home' link in the navigation bar. The browser correctly loaded index.php.
+
+Logout Script Test: Clicked the 'Logout' button. The session was destroyed, and the user was sent back to the login screen.
+
+Cart Confirmation Test: Clicked a product on the Order page. A JavaScript confirmation box appeared asking for confirmation.
+
+Add to Cart Logic Test: Confirmed the add-to-cart alert. The item appeared in the cart session, and the page reloaded with a success message.
+
+Cancel Add Test: Clicked 'Cancel' on the add-to-cart alert. The cart remained empty, confirming the script respects the user's choice.
+
+Case Matching Test: Added "Wheat" (capitalized) to the cart. The strtolower function matched it to the lowercase array key in the backend perfectly.
+
+Quantity Increase Test: Changed the quantity of an item to '5' in the cart. The total price recalculated accurately.
+
+Zero Quantity Test: Set an item quantity to '0'. The system successfully removed the item from the cart upon update.
+
+Manual Removal Test: Clicked the 'Remove' link in the cart. The item was instantly deleted from the session data.
+
+Database & Backend Tests
+Live Stock Update Test: As a Producer, changed the stock of Wheat from 0 to 100. The database record updated, and the new value was still there after refreshing.
+
+Producer Isolation Test: Logged in as Producer A and confirmed that Producer B’s inventory was not visible or editable.
+
+Data Type Validation Test: Entered text into the stock number field. The PHP casting (int) prevented a database error by treating the text as zero.
+
+Empty Checkout Test: Attempted to load the checkout page with zero items in the cart. The system redirected back to the order page.
+
+Card Digit Test: Entered 10 digits for the card number. The HTML5 validation blocked the payment and asked for exactly 12 digits.
+
+Expiry Date Format Test: Entered "13/25" as the expiry date. The regex pattern blocked the entry because '13' is not a valid month.
+
+Whole Point Reward Test: Purchased £10.00 worth of items. Verified that the users table increased the user's points balance by exactly 10.
+
+Decimal Point Reward Test: Purchased £5.50 worth of items. Verified that the floor() function correctly awarded 5 points instead of a decimal.
+
+Session Clearing Test: Completed a purchase. Confirmed that the process_payment.php script wiped the cart session so it was empty for the next order.
+
+Design, UX & Accessibility Tests
+Menu Hover Test: Hovered over the "Grains & Pantry" button. The dropdown menu appeared smoothly and remained open during selection.
+
+Nav Bar Spacing Test: Inspected the navigation links. Confirmed the 30px margin provides enough space to prevent accidental clicks.
+
+Button Spacing Test: Inspected the category buttons. Confirmed the 40px margin separates "Grains" and "Meat" clearly for the user.
+
+Password Encryption Test: Checked the users table in phpMyAdmin. Confirmed all passwords appear as random hashed strings, not readable text.
+
+Contact Form Submission Test: Filled out the contact form. The page handled the data via POST without errors.
+
+Responsive Card Test: Viewed the About page on a small screen. The producer cards stacked vertically, ensuring the text remained readable.
