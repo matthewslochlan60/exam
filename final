@@ -1,17 +1,23 @@
 <?php 
 session_start(); 
 
-// Updated Logic: Redirect back to Order page instead of Cart
+// --- CART LOGIC ---
+// This handles the "Add to Cart" request without leaving the page
 if (isset($_GET['add'])) {
     $productToAdd = $_GET['add'];
-    // In a real app, verify against $products array here or in a config file
+    
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+
     if (isset($_SESSION['cart'][$productToAdd])) {
         $_SESSION['cart'][$productToAdd]++;
     } else {
         $_SESSION['cart'][$productToAdd] = 1;
     }
-    // REDIRECT BACK TO ORDER PAGE
-    header("Location: order.php?success=1");
+
+    // Redirect back to order.php with a success flag to prevent refresh loops
+    header("Location: order.php?success=" . urlencode($productToAdd));
     exit();
 }
 ?>
@@ -21,99 +27,151 @@ if (isset($_GET['add'])) {
     <title>Greenfield Local Hub | Order</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Space the Category Buttons apart */
-        .dropdown { 
-            margin-right: 25px; 
-            margin-bottom: 20px;
-        }
-
-        /* Space the Navigation links apart */
+        /* Spacing the Navigation Menu items */
         nav ul li {
-            margin-right: 20px;
+            margin-right: 30px; /* Moves nav items further apart */
         }
 
+        /* Spacing the Dropdown Buttons apart */
+        .dropdown { 
+            margin-right: 40px; /* Gap between "Grains" and "Meat" buttons */
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        /* Success Message Styling */
+        .added-note {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #c3e6cb;
+            display: inline-block;
+        }
+
+        /* Local style for the order items inside dropdowns */
         .order-item {
             padding: 10px;
             border-bottom: 1px solid #ccc;
             background: white;
             cursor: pointer;
             color: black;
+            text-align: center;
         }
         .order-item:hover { background: #e0ffdf; }
-        
-        .success-msg {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid #c3e6cb;
-        }
     </style>
 </head>
 <body>
 
 <nav>
- <div class="nav-container">
-        <div class="logo"><img src="images/logo.jpg" alt="Logo"></div>
-    <ul>
-        <li><a href="index.php">Home</a></li>
-        <li><a href="about.php">About</a></li>
-        <li><a href="login.php">Login</a></li>
-        <li><a href="dashboard.php">Dashboard</a></li>
-        <li><a href="order.php" class="active">Order</a></li>
-        <li><a href="cart.php">Cart</a></li>
-        <li><a href="contact.php">Contact</a></li>
-        <li class="dropdown">
-            <a href="#">
-                <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
-            </a>
-            <div class="dropdown-content">
-                <?php if(isset($_SESSION['username'])): ?>
-                    <a href="logout.php">Logout</a>
-                <?php endif; ?>
-            </div>
-        </li>
-    </ul>
-</div>
+    <div class="nav-container">
+        <div class="logo">
+            <img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
+        </div>
+        <ul>
+            <li style="font-size:30px; font-weight: bold;"><a href="index.php">Home</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="login.php">Login</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="order.php" class="active">Order</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="cart.php">Cart</a></li>
+            <li style="font-size:30px; font-weight: bold;"><a href="contact.php">Contact</a></li>
+            <li class="dropdown" style="font-size:30px">
+                <a href="login.php">
+                    <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
+                </a>
+                <div class="dropdown-content">
+                    <?php if(isset($_SESSION['username'])): ?>
+                        <a href="logout.php">Logout</a>
+                    <?php endif; ?>
+                </div>
+            </li>
+        </ul>
+    </div>
 </nav>
 
-<h2>Select Items for Collection</h2>
+<div style="padding: 20px;">
+    <h2>Select Items for Collection</h2>
 
-<?php if(isset($_GET['success'])): ?>
-    <div class="success-msg">Item added to cart successfully!</div>
-<?php endif; ?>
+    <?php if(isset($_GET['success'])): ?>
+        <div class="added-note">
+            ✅ Added <strong><?php echo htmlspecialchars($_GET['success']); ?></strong> to your cart! 
+            <a href="cart.php" style="color: #155724; font-weight: bold; margin-left: 10px;">View Cart</a>
+        </div>
+        <br>
+    <?php endif; ?>
 
-<div class="dropdown">
-  <button class="dropbtn">Grains & Pantry</button>
-  <div class="dropdown-content">
-    <div class="order-item" onclick="confirmAdd('Wheat', 2.50)">
-        <p>Wheat - £2.50</p>
-        <img src="images/Wheat.jpg" alt="Wheat" width="80">
+    <div class="dropdown">
+      <button class="dropbtn">Grains & Pantry</button>
+      <div class="dropdown-content">
+        <div class="order-item" onclick="confirmAdd('Wheat', 2.50)">
+            <p>Wheat - £2.50</p>
+            <img src="images/Wheat.jpg" alt="Wheat" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Apple', 1.25)">
+            <p>Apple - £1.25</p>
+            <img src="images/apple.jpg" alt="apple" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Orange', 1.75)">
+            <p>Orange - £1.75</p>
+            <img src="images/orange.jpg" alt="orange" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Carrot', 1.75)">
+            <p>Carrot - £1.75</p>
+            <img src="images/carrot.jpg" alt="carrot" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Corn', 2.45)">
+            <p>Corn - £2.45</p>
+            <img src="images/corn.jpg" alt="corn" width="80">
+        </div>
+       </div>
     </div>
-    </div>
-</div>
 
-<div class="dropdown">
-  <button class="dropbtn">Meat & Deli</button>
-  <div class="dropdown-content">
-    <div class="order-item" onclick="confirmAdd('Sausages', 5.00)">
-        <p>Sausages - £5.00</p>
-        <img src="images/sausage.jpg" alt="Sausages" width="80">
-    </div>
+    <div class="dropdown">
+      <button class="dropbtn">Meat & Deli</button>
+      <div class="dropdown-content">
+        <div class="order-item" onclick="confirmAdd('Sausages', 5.00)">
+            <p>Sausages - £5.00</p>
+            <img src="images/sausage.jpg" alt="Sausages" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Steak', 6.00)">
+            <p>Steak - £6.00</p>
+            <img src="images/steak.jpg" alt="steak" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Porkchop', 6.50)">
+            <p>Porkchop - £6.50</p>
+            <img src="images/porkchop.jpg" alt="pork" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Ham', 1.50)">
+            <p>Ham - £1.50</p>
+            <img src="images/ham.jpg" alt="ham" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Chicken', 10.00)">
+            <p>Chicken - £10.00</p>
+            <img src="images/chicken.jpg" alt="chicken" width="80">
+        </div>
+        <div class="order-item" onclick="confirmAdd('Bacon', 3.85)">
+            <p>Bacon - £3.85</p>
+            <img src="images/bacon.jpg" alt="bacon" width="80">
+        </div>
+      </div>
     </div>
 </div>
 
 <script>
 function confirmAdd(itemName, price) {
+    // Force to lowercase to match the cart's product array
     let itemKey = itemName.toLowerCase(); 
-    let check = confirm("Add " + itemName + " to your cart?");
+    
+    let check = confirm("Would you like to add " + itemName + " (£" + price.toFixed(2) + ") to your cart?");
     if (check) {
-        // Sends to self instead of cart.php
+        // Sends request to this same page, not cart.php
         window.location.href = "order.php?add=" + itemKey;
     }
 }
 </script>
+
 </body>
 </html>
 
