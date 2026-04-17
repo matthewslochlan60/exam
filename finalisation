@@ -1,10 +1,5 @@
-i need people who have logged in to see perchase history 
-and when they order the item from cart to have an option for collection or delivery
-
 <?php
 session_start();
-
-// Database Connection
 $conn = new mysqli("localhost", "root", "", "glh_database");
 
 if (empty($_SESSION['cart'])) {
@@ -12,8 +7,6 @@ if (empty($_SESSION['cart'])) {
     exit;
 }
 
-// 1. Calculate the Total and Points
-// We need the product prices again to calculate the total
 $products = [
     "wheat" => 2.50, "apple" => 1.25, "orange" => 1.75, "carrot" => 1.75,
     "corn" => 2.45, "sausages" => 5.00, "steak" => 6.00, "porkchop" => 6.50,
@@ -26,8 +19,7 @@ foreach ($_SESSION['cart'] as $id => $qty) {
         $total += ($products[$id] * $qty);
     }
 }
-
-$points_to_earn = floor($total); // 1 point per £1 spent
+$points_to_earn = floor($total);
 ?>
 
 <!DOCTYPE html>
@@ -38,8 +30,9 @@ $points_to_earn = floor($total); // 1 point per £1 spent
     <style>
         body { font-family: Arial; margin: 20px; color: white; background-color: #2d5a27; }
         .checkout-container { background: rgba(0,0,0,0.5); padding: 30px; border-radius: 15px; max-width: 500px; margin: auto; }
-        input { margin-bottom: 15px; display: block; width: 90%; padding: 10px; }
+        input[type="text"] { margin-bottom: 15px; display: block; width: 90%; padding: 10px; }
         .reward-box { background: #ffcc00; color: black; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center; }
+        .method-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -48,14 +41,20 @@ $points_to_earn = floor($total); // 1 point per £1 spent
     <h2>Finalize Your Order</h2>
     
     <div class="reward-box">
-        🌟 You are earning <?php echo $points_to_earn; ?> Loyalty Points with this order!
+        🌟 You are earning <?php echo $points_to_earn; ?> Loyalty Points!
     </div>
 
-    <p><strong>Order Total: £<?php echo number_format($total, 2); ?></strong></p>
+    <p><strong>Subtotal: £<?php echo number_format($total, 2); ?></strong></p>
 
     <form method="post" action="process_payment.php">
         <label>Full Name:</label>
-        <input type="text" name="name" required>
+        <input type="text" name="fullname" required>
+
+        <div class="method-box">
+            <label style="font-weight: bold;">How would you like your items?</label><br><br>
+            <input type="radio" name="method" value="Collection" checked> Collection (Free)<br>
+            <input type="radio" name="method" value="Delivery"> Delivery (+£2.50)
+        </div>
 
         <label>Card Number (12 Digits):</label>
         <input type="text" name="card" pattern="\d{12}" maxlength="12" placeholder="123456789012" required>
@@ -63,475 +62,116 @@ $points_to_earn = floor($total); // 1 point per £1 spent
         <div style="display: flex; gap: 10px;">
             <div style="flex: 1;">
                 <label>Expiry (MM/YY):</label>
-                <input type="text" name="expiry" pattern="(0[1-9]|1[0-2])\/\d{2}" placeholder="MM/YY" required>
+                <input type="text" name="expiry" pattern="(0[1-9]|1[0-2])\/\d{2}" required>
             </div>
             <div style="flex: 1;">
                 <label>CVV:</label>
-                <input type="text" name="cvv" pattern="\d{3}" maxlength="3" placeholder="123" required>
+                <input type="text" name="cvv" pattern="\d{3}" maxlength="3" required>
             </div>
         </div>
 
         <button type="submit" class="btn" style="width: 100%; padding: 15px; font-size: 18px;">
-            Pay £<?php echo number_format($total, 2); ?>
+            Complete Purchase
         </button>
     </form>
-    
-    <br>
-    <a href="cart.php" style="color: white;">Back to Cart</a>
 </div>
-
 </body>
 </html>
+
 <?php
 session_start();
+$conn = new mysqli("localhost", "root", "", "glh_database");
+
+if (!isset($_SESSION['username']) || empty($_SESSION['cart'])) {
+    header("Location: order.php");
+    exit();
+}
+
+$user = $_SESSION['username'];
+$method = $_POST['method'];
 
 $products = [
-    "wheat" => 2.50,
-    "sausages" => 5.00,
-    "honey" => 3.50,
-    "steak" => 6.00,
-    "apple"=> 1.25,
-    "porkchop" => 6.50,
-    "ham" => 1.50,
-    "chicken" => 10.00,
-    "orange" => 1.75,
-    "carrot" => 1.75,
-    "bacon" => 3.85,
-    "corn" => 2.45,
-    "eggs" => 2.50
+    "wheat" => 2.50, "apple" => 1.25, "orange" => 1.75, "carrot" => 1.75,
+    "corn" => 2.45, "sausages" => 5.00, "steak" => 6.00, "porkchop" => 6.50,
+    "ham" => 1.50, "chicken" => 10.00, "bacon" => 3.85, "eggs" => 2.50
 ];
 
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-// FIX: Handle adding items (moved logic from order.php to here)
-if (isset($_GET['add'])) {
-    $productToAdd = strtolower($_GET['add']); // Force lowercase
-    if (array_key_exists($productToAdd, $products)) {
-        if (isset($_SESSION['cart'][$productToAdd])) {
-            $_SESSION['cart'][$productToAdd]++;
-        } else {
-            $_SESSION['cart'][$productToAdd] = 1;
-        }
-    }
-    header("Location: cart.php");
-    exit();
-}
-
-// Remove
-if (isset($_GET['remove'])) {
-    unset($_SESSION['cart'][$_GET['remove']]);
-}
-
-if (isset($_POST['update'])) {
-    foreach ($_POST['qty'] as $product => $quantity) {
-        $quantity = (int)$quantity;
-
-        if ($quantity <= 0) {
-            unset($_SESSION['cart'][$product]);
-        } else {
-            $_SESSION['cart'][$product] = $quantity;
-        }
-    }
-
-    header("Location: cart.php");
-    exit();
-}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-     <title>Greenfield Local Hub | Order</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body { font-family: Arial; margin: 20px; }
-        table { border-collapse: collapse; }
-        td, th { padding: 8px; border: 1px solid #ccc; }
-        button { margin-top: 10px; }
-    </style>
-</head>
-<body>
-
-<h2>Your Cart</h2>
-
-<?php if (empty($_SESSION['cart'])): ?>
-    <p>Your cart is empty.</p>
-<?php else: ?>
-
-<form method="post">
-<table>
-<tr>
-    <th>Product</th>
-    <th>Price</th>
-    <th>Qty</th>
-    <th>Total</th>
-    <th></th>
-</tr>
-
-<?php
 $total = 0;
-foreach ($_SESSION['cart'] as $product => $qty):
-    $price = $products[$product];
-    $sub = $price * $qty;
-    $total += $sub;
+$items_array = [];
+foreach ($_SESSION['cart'] as $id => $qty) {
+    if(isset($products[$id])) {
+        $total += ($products[$id] * $qty);
+        $items_array[] = ucfirst($id) . " (x$qty)";
+    }
+}
+
+// Add delivery fee if selected
+if ($method == "Delivery") { $total += 2.50; }
+
+$items_string = implode(", ", $items_array);
+$points = floor($total);
+
+// 1. Save the Order to history
+$stmt = $conn->prepare("INSERT INTO orders (username, items, total_price, delivery_method) VALUES (?, ?, ?, ?)");
+$stmt->bind_param("ssds", $user, $items_string, $total, $method);
+$stmt->execute();
+
+// 2. Add Reward Points to User
+$conn->query("UPDATE users SET points = points + $points WHERE username = '$user'");
+
+// 3. Clear Cart
+unset($_SESSION['cart']);
+
+// 4. Redirect to history page
+header("Location: history.php");
+exit();
 ?>
 
-<tr>
-    <td><?php echo $product; ?></td>
-    <td>£<?php echo $price; ?></td>
-    <td>
-        <input type="number" name="qty[<?php echo $product; ?>]" value="<?php echo $qty; ?>" style="width:50px;">
-    </td>
-    <td>£<?php echo $sub; ?></td>
-    <td><a href="?remove=<?php echo $product; ?>">Remove</a></td>
-</tr>
-
-<?php endforeach; ?>
-
-<tr>
-    <td colspan="3"><strong>Total</strong></td>
-    <td colspan="2">£<?php echo $total; ?></td>
-</tr>
-
-</table>
-
-<button name="update">Update Cart</button>
-</form>
-
-<br>
-<a href="checkout.php">Proceed to Checkout</a>
-
-<?php endif; ?>
-
-<br><br>
-<a href="order.php">Back to Products</a>
-
-</body>
-</html>
-
-<?php 
-session_start(); 
-
-// --- CART LOGIC ---
-// This handles the "Add to Cart" request without leaving the page
-if (isset($_GET['add'])) {
-    $productToAdd = $_GET['add'];
-    
-    if (!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-
-    if (isset($_SESSION['cart'][$productToAdd])) {
-        $_SESSION['cart'][$productToAdd]++;
-    } else {
-        $_SESSION['cart'][$productToAdd] = 1;
-    }
-
-    // Redirect back to order.php with a success flag to prevent refresh loops
-    header("Location: order.php?success=" . urlencode($productToAdd));
-    exit();
-}
+<?php session_start(); 
+$conn = new mysqli("localhost", "root", "", "glh_database");
+$user = $_SESSION['username'];
+$sql = "SELECT * FROM orders WHERE username = ? ORDER BY order_date DESC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $user);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Greenfield Local Hub | Order</title>
+    <title>Order History</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Spacing the Navigation Menu items */
-        nav ul li {
-            margin-right: 30px; /* Moves nav items further apart */
-        }
-
-        /* Spacing the Dropdown Buttons apart */
-        .dropdown { 
-            margin-right: 40px; /* Gap between "Grains" and "Meat" buttons */
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-
-        /* Success Message Styling */
-        .added-note {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #c3e6cb;
-            display: inline-block;
-        }
-
-        /* Local style for the order items inside dropdowns */
-        .order-item {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            background: white;
-            cursor: pointer;
-            color: black;
-            text-align: center;
-        }
-        .order-item:hover { background: #e0ffdf; }
-    </style>
 </head>
 <body>
-
-<nav>
-    <div class="nav-container">
-        <div class="logo">
-            <img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
-        </div>
-        <ul>
-            <li style="font-size:30px; font-weight: bold;"><a href="index.php">Home</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="login.php">Login</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="order.php" class="active">Order</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="cart.php">Cart</a></li>
-            <li style="font-size:30px; font-weight: bold;"><a href="contact.php">Contact</a></li>
-            <li class="dropdown" style="font-size:30px">
-                <a href="login.php">
-                    <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
-                </a>
-                <div class="dropdown-content">
-                    <?php if(isset($_SESSION['username'])): ?>
-                        <a href="logout.php">Logout</a>
-                    <?php endif; ?>
-                </div>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<div style="padding: 20px;">
-    <h2>Select Items for Collection</h2>
-
-    <?php if(isset($_GET['success'])): ?>
-        <div class="added-note">
-            ✅ Added <strong><?php echo htmlspecialchars($_GET['success']); ?></strong> to your cart! 
-            <a href="cart.php" style="color: #155724; font-weight: bold; margin-left: 10px;">View Cart</a>
-        </div>
+    <div class="lbox" style="width:80%; margin:auto; color:white; padding:20px;">
+        <h2>Your Purchase History</h2>
+        <table style="width:100%; border-collapse:collapse; color:white;">
+            <tr style="background:#4CAF50;">
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Method</th>
+            </tr>
+            <?php while($row = $result->fetch_assoc()): ?>
+            <tr style="border-bottom: 1px solid #555;">
+                <td><?php echo $row['order_date']; ?></td>
+                <td><?php echo $row['items']; ?></td>
+                <td>£<?php echo $row['total_price']; ?></td>
+                <td><?php echo $row['delivery_method']; ?></td>
+            </tr>
+            <?php endwhile; ?>
+        </table>
         <br>
-    <?php endif; ?>
-
-    <div class="dropdown">
-      <button class="dropbtn">Grains & Pantry</button>
-      <div class="dropdown-content">
-        <div class="order-item" onclick="confirmAdd('Wheat', 2.50)">
-            <p>Wheat - £2.50</p>
-            <img src="images/Wheat.jpg" alt="Wheat" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Apple', 1.25)">
-            <p>Apple - £1.25</p>
-            <img src="images/apple.jpg" alt="apple" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Orange', 1.75)">
-            <p>Orange - £1.75</p>
-            <img src="images/orange.jpg" alt="orange" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Carrot', 1.75)">
-            <p>Carrot - £1.75</p>
-            <img src="images/carrot.jpg" alt="carrot" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Corn', 2.45)">
-            <p>Corn - £2.45</p>
-            <img src="images/corn.jpg" alt="corn" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('eggs', 2.50)">
-            <p>Eggs - £2.50</p>
-            <img src="images/egg.jpg" alt="corn" width="80">
-        </div>
-       </div>
+        <a href="order.php" class="btn">Order More</a>
     </div>
-
-    <div class="dropdown">
-      <button class="dropbtn">Meat & Deli</button>
-      <div class="dropdown-content">
-        <div class="order-item" onclick="confirmAdd('Sausages', 5.00)">
-            <p>Sausages - £5.00</p>
-            <img src="images/sausage.jpg" alt="Sausages" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Steak', 6.00)">
-            <p>Steak - £6.00</p>
-            <img src="images/steak.jpg" alt="steak" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Porkchop', 6.50)">
-            <p>Porkchop - £6.50</p>
-            <img src="images/porkchop.jpg" alt="pork" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Ham', 1.50)">
-            <p>Ham - £1.50</p>
-            <img src="images/ham.jpg" alt="ham" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Chicken', 10.00)">
-            <p>Chicken - £10.00</p>
-            <img src="images/chicken.jpg" alt="chicken" width="80">
-        </div>
-        <div class="order-item" onclick="confirmAdd('Bacon', 3.85)">
-            <p>Bacon - £3.85</p>
-            <img src="images/bacon.jpg" alt="bacon" width="80">
-        </div>
-      </div>
-    </div>
-</div>
-
-<script>
-function confirmAdd(itemName, price) {
-    // Force to lowercase to match the cart's product array
-    let itemKey = itemName.toLowerCase(); 
-    
-    let check = confirm("Would you like to add " + itemName + " (£" + price.toFixed(2) + ") to your cart?");
-    if (check) {
-        // Sends request to this same page, not cart.php
-        window.location.href = "order.php?add=" + itemKey;
-    }
-}
-</script>
-<footer class="footer">
-    <p>&copy; <?php echo date("Y"); ?> Greenfield Local Hub</p>
-</footer>
 </body>
 </html>
 
-<?php
-session_start();
-
-// Database Connection Details
-$host = "localhost";
-$db_user = "root"; // Default for XAMPP
-$db_pass = "";     // Default for XAMPP
-$db_name = "glh_database";
-
-$conn = new mysqli($host, $db_user, $db_pass, $db_name);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$message = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user = htmlspecialchars(trim($_POST['username']));
-    $pass = $_POST['password'];
-    $role = $_POST['role'];
-
-
-    if (isset($_POST['register'])) {
-    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
-    
-    // 1. Insert the new user
-    $sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $user, $hashed_pass, $role);
-
-    if ($stmt->execute()) {
-        // 2. If they are a producer, initialize their stock to zero
-        if ($role == 'producer') {
-            $default_products = ['wheat', 'sausages', 'honey', 'steak','apple','porkchop','ham','chicken slices','chicken','orange','carrot','bacon','corn'];
-            
-            foreach ($default_products as $product) {
-                $stock_sql = "INSERT INTO products (producer_username, product_name, stock_level) VALUES (?, ?, 0)";
-                $stock_stmt = $conn->prepare($stock_sql);
-                $stock_stmt->bind_param("ss", $user, $product);
-                $stock_stmt->execute();
-            }
-        }
-        $message = "Registration successful! You can now login.";
-    } else {
-        $message = "Error: User already exists.";
-    }
-}
-
-    // --- LOGIN LOGIC ---
-    if (isset($_POST['login'])) {
-        $sql = "SELECT password, role FROM users WHERE username = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $user);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            // Verify the entered password against the hashed password in the DB
-            if (password_verify($pass, $row['password'])) {
-                $_SESSION['username'] = $user;
-                $_SESSION['role'] = $row['role'];
-
-                if ($row['role'] == 'producer') {
-                    header("Location: dashboard.php");
-                } else {
-                    header("Location: order.php");
-                }
-                exit();
-            } else {
-                $message = "Invalid password.";
-            }
-        } else {
-            $message = "No user found with that username.";
-        }
-    }
-}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>GLH | Login & Register</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <nav>
-    <div class="nav-container">
-        <div class="logo">
-	        <img src="images/logo.jpg" alt="Greenfield Local Hub Logo">
-    <ul>
-        <li style="font-size:30px; font-weight: bold;"><a href="index.php">Home</a></li>
-        <li style="font-size:30px; font-weight: bold;"><a href="about.php">About</a></li>
-        <li style="font-size:30px; font-weight: bold;"><a href="login.php" class="active">Login</a></li>
-        <li style="font-size:30px; font-weight: bold;"><a href="dashboard.php">Dashboard</a></li>
-        <li style="font-size:30px; font-weight: bold;"><a href="order.php">Order</a></li>
-        <li style="font-size:30px; font-weight: bold;"><a href="contact.php">Contact</a></li>
-        <li class="dropdown" style="font-size:30px">
-            <a href="login.php">
-            <?php echo isset($_SESSION['username']) ? "Hello, " . $_SESSION['username'] : "Account"; ?>
-            </a>
-            <div class="dropdown-content">
-                <?php if(isset($_SESSION['username'])): ?>
-                    <a href="logout.php">Logout</a>
-                <?php endif; ?>
-            </div>
-        </div>
-        </li>
-    </ul>
-    </div>
-</nav>
-
-<div class="lbox" style="height: auto; padding: 20px; margin: 50px auto; width: 400px; color: white;">
-    <h2>Member Access</h2>
-    
-    <?php if($message): ?>
-        <p style="background: #ffcc00; color: black; padding: 5px;"><?php echo $message; ?></p>
-    <?php endif; ?>
-
-    <form method="POST">
-        <label>Username:</label><br>
-        <input type="text" name="username" required style="width: 90%;"><br><br>
-
-        <label>Password:</label><br>
-        <input type="password" name="password" required style="width: 90%;"><br><br>
-
-        <label>Select Role:</label><br>
-        <select name="role" style="width: 90%; padding: 5px;">
-            <option value="customer">Customer</option>
-            <option value="producer">Producer</option>
-        </select><br><br>
-
-        <button type="submit" name="login" class="btn">Login</button>
-        <button type="submit" name="register" class="btn" style="background-color: #4CAF50;">Register</button>
-    </form>
-</div>
-<footer class="footer">
-    <p>&copy; <?php echo date("Y"); ?> Greenfield Local Hub</p>
-</footer>
-</body>
-</html>
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+    items TEXT,
+    total_price DECIMAL(10,2),
+    delivery_method VARCHAR(50),
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
