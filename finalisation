@@ -1,141 +1,131 @@
-CREATE TABLE orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255),
-    items TEXT,
-    total_price DECIMAL(10,2),
-    delivery_method VARCHAR(50),
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-checkout
-
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "glh_database");
-
-if (empty($_SESSION['cart'])) {
-    header("Location: order.php");
-    exit;
-}
 
 $products = [
-    "wheat" => 2.50, "apple" => 1.25, "orange" => 1.75, "carrot" => 1.75,
-    "corn" => 2.45, "sausages" => 5.00, "steak" => 6.00, "porkchop" => 6.50,
-    "ham" => 1.50, "chicken" => 10.00, "bacon" => 3.85, "eggs" => 2.50
+    "wheat" => 2.50,
+    "sausages" => 5.00,
+    "honey" => 3.50,
+    "steak" => 6.00,
+    "apple"=> 1.25,
+    "porkchop" => 6.50,
+    "ham" => 1.50,
+    "chicken" => 10.00,
+    "orange" => 1.75,
+    "carrot" => 1.75,
+    "bacon" => 3.85,
+    "corn" => 2.45,
+    "eggs" => 2.50
 ];
 
-$total = 0;
-foreach ($_SESSION['cart'] as $id => $qty) {
-    if(isset($products[$id])) {
-        $total += ($products[$id] * $qty);
-    }
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
 }
-$points_to_earn = floor($total);
+
+// FIX: Handle adding items (moved logic from order.php to here)
+if (isset($_GET['add'])) {
+    $productToAdd = strtolower($_GET['add']); // Force lowercase
+    if (array_key_exists($productToAdd, $products)) {
+        if (isset($_SESSION['cart'][$productToAdd])) {
+            $_SESSION['cart'][$productToAdd]++;
+        } else {
+            $_SESSION['cart'][$productToAdd] = 1;
+        }
+    }
+    header("Location: cart.php");
+    exit();
+}
+
+// Remove
+if (isset($_GET['remove'])) {
+    unset($_SESSION['cart'][$_GET['remove']]);
+}
+
+if (isset($_POST['update'])) {
+    foreach ($_POST['qty'] as $product => $quantity) {
+        $quantity = (int)$quantity;
+
+        if ($quantity <= 0) {
+            unset($_SESSION['cart'][$product]);
+        } else {
+            $_SESSION['cart'][$product] = $quantity;
+        }
+    }
+
+    header("Location: cart.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Checkout | Greenfield Local Hub</title>
+     <title>Greenfield Local Hub | Order</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { font-family: Arial; margin: 20px; color: white; background-color: #2d5a27; }
-        .checkout-container { background: rgba(0,0,0,0.5); padding: 30px; border-radius: 15px; max-width: 500px; margin: auto; }
-        input[type="text"] { margin-bottom: 15px; display: block; width: 90%; padding: 10px; }
-        .reward-box { background: #ffcc00; color: black; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center; }
-        .method-box { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        body { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; }
+        td, th { padding: 8px; border: 1px solid #ccc; }
+        button { margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="checkout-container">
-    <h2>Finalize Your Order</h2>
-    
-    <div class="reward-box">
-        🌟 You are earning <?php echo $points_to_earn; ?> Loyalty Points!
-    </div>
+<h2>Your Cart</h2>
 
-    <p><strong>Subtotal: £<?php echo number_format($total, 2); ?></strong></p>
+<?php if (empty($_SESSION['cart'])): ?>
+    <p>Your cart is empty.</p>
+<?php else: ?>
 
-    <form method="post" action="process_payment.php">
-        <label>Full Name:</label>
-        <input type="text" name="fullname" required>
+<form method="post">
+<table>
+<tr>
+    <th>Product</th>
+    <th>Price</th>
+    <th>Qty</th>
+    <th>Total</th>
+    <th></th>
+</tr>
 
-        <div class="method-box">
-            <label style="font-weight: bold;">How would you like your items?</label><br><br>
-            <input type="radio" name="method" value="Collection" checked> Collection (Free)<br>
-            <input type="radio" name="method" value="Delivery"> Delivery (+£2.50)
-        </div>
+<?php
+$total = 0;
+foreach ($_SESSION['cart'] as $product => $qty):
+    $price = $products[$product];
+    $sub = $price * $qty;
+    $total += $sub;
+?>
 
-        <label>Card Number (12 Digits):</label>
-        <input type="text" name="card" pattern="\d{12}" maxlength="12" placeholder="123456789012" required>
+<tr>
+    <td><?php echo $product; ?></td>
+    <td>£<?php echo $price; ?></td>
+    <td>
+        <input type="number" name="qty[<?php echo $product; ?>]" value="<?php echo $qty; ?>" style="width:50px;">
+    </td>
+    <td>£<?php echo $sub; ?></td>
+    <td><a href="?remove=<?php echo $product; ?>">Remove</a></td>
+</tr>
 
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label>Expiry (MM/YY):</label>
-                <input type="text" name="expiry" pattern="(0[1-9]|1[0-2])\/\d{2}" required>
-            </div>
-            <div style="flex: 1;">
-                <label>CVV:</label>
-                <input type="text" name="cvv" pattern="\d{3}" maxlength="3" required>
-            </div>
-        </div>
+<?php endforeach; ?>
 
-        <button type="submit" class="btn" style="width: 100%; padding: 15px; font-size: 18px;">
-            Complete Purchase
-        </button>
-    </form>
-</div>
+<tr>
+    <td colspan="3"><strong>Total</strong></td>
+    <td colspan="2">£<?php echo $total; ?></td>
+</tr>
+
+</table>
+
+<button name="update">Update Cart</button>
+</form>
+
+<br>
+<a href="checkout.php">Proceed to Checkout</a>
+
+<?php endif; ?>
+
+<br><br>
+<a href="order.php">Back to Products</a>
+
 </body>
 </html>
 
-proccess payment
 
-<?php
-session_start();
-$conn = new mysqli("localhost", "root", "", "glh_database");
-
-if (!isset($_SESSION['username']) || empty($_SESSION['cart'])) {
-    header("Location: order.php");
-    exit();
-}
-
-$user = $_SESSION['username'];
-$method = $_POST['method'];
-
-$products = [
-    "wheat" => 2.50, "apple" => 1.25, "orange" => 1.75, "carrot" => 1.75,
-    "corn" => 2.45, "sausages" => 5.00, "steak" => 6.00, "porkchop" => 6.50,
-    "ham" => 1.50, "chicken" => 10.00, "bacon" => 3.85, "eggs" => 2.50
-];
-
-$total = 0;
-$items_array = [];
-foreach ($_SESSION['cart'] as $id => $qty) {
-    if(isset($products[$id])) {
-        $total += ($products[$id] * $qty);
-        $items_array[] = ucfirst($id) . " (x$qty)";
-    }
-}
-
-// Add delivery fee if selected
-if ($method == "Delivery") { $total += 2.50; }
-
-$items_string = implode(", ", $items_array);
-$points = floor($total);
-
-// 1. Save the Order to history
-$stmt = $conn->prepare("INSERT INTO orders (username, items, total_price, delivery_method) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssds", $user, $items_string, $total, $method);
-$stmt->execute();
-
-// 2. Add Reward Points to User
-$conn->query("UPDATE users SET points = points + $points WHERE username = '$user'");
-
-// 3. Clear Cart
-unset($_SESSION['cart']);
-
-// 4. Redirect to history page
-header("Location: history.php");
-exit();
-?>
+i want there to be an option to view order history in cart and to go back to cart from history
