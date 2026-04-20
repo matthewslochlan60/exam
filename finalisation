@@ -1,3 +1,14 @@
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+    items TEXT,
+    total_price DECIMAL(10,2),
+    delivery_method VARCHAR(50),
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+checkout
+
 <?php
 session_start();
 $conn = new mysqli("localhost", "root", "", "glh_database");
@@ -78,6 +89,8 @@ $points_to_earn = floor($total);
 </body>
 </html>
 
+proccess payment
+
 <?php
 session_start();
 $conn = new mysqli("localhost", "root", "", "glh_database");
@@ -126,52 +139,3 @@ unset($_SESSION['cart']);
 header("Location: history.php");
 exit();
 ?>
-
-<?php session_start(); 
-$conn = new mysqli("localhost", "root", "", "glh_database");
-$user = $_SESSION['username'];
-$sql = "SELECT * FROM orders WHERE username = ? ORDER BY order_date DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $user);
-$stmt->execute();
-$result = $stmt->get_result();
-?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Order History</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="lbox" style="width:80%; margin:auto; color:white; padding:20px;">
-        <h2>Your Purchase History</h2>
-        <table style="width:100%; border-collapse:collapse; color:white;">
-            <tr style="background:#4CAF50;">
-                <th>Date</th>
-                <th>Items</th>
-                <th>Total</th>
-                <th>Method</th>
-            </tr>
-            <?php while($row = $result->fetch_assoc()): ?>
-            <tr style="border-bottom: 1px solid #555;">
-                <td><?php echo $row['order_date']; ?></td>
-                <td><?php echo $row['items']; ?></td>
-                <td>£<?php echo $row['total_price']; ?></td>
-                <td><?php echo $row['delivery_method']; ?></td>
-            </tr>
-            <?php endwhile; ?>
-        </table>
-        <br>
-        <a href="order.php" class="btn">Order More</a>
-    </div>
-</body>
-</html>
-
-CREATE TABLE orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255),
-    items TEXT,
-    total_price DECIMAL(10,2),
-    delivery_method VARCHAR(50),
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
