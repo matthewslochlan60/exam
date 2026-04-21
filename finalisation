@@ -1049,4 +1049,335 @@ $result = $stmt->get_result();
 </footer>
 </body>
 </html>
-here is all my code for the php files being, index, about, login, dashboard, logout, order, cart, checkout, process payment, history and contact is there any updates to functionality or styling that could be beneficial
+.dropdown { position: relative; display: inline-block; }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #000000;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+        z-index: 1;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .dropdown:hover .dropdown-content { display: block; }
+    
+    .form-input { margin-bottom: 10px; width: 90%; }
+    .btn { background-color: #b32d00; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* NAVBAR */
+.navbar {
+    background: #2e7d32;
+    padding: 10px 0;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: auto;
+}
+
+.logo img {
+    height: 60px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.nav-links li {
+    position: relative;
+}
+
+.nav-links li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links li a:hover,
+.nav-links .active {
+    text-decoration: underline;
+}
+
+/* DROPDOWN */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: white;
+    top: 30px;
+    right: 0;
+    min-width: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* HERO */
+.hero {
+    background: #a5d6a7;
+    padding: 40px;
+    text-align: center;
+}
+
+/* CONTENT */
+.content {
+    width: 80%;
+    margin: 40px auto;
+}
+
+.content section {
+    margin-bottom: 30px;
+}
+
+/* IMAGE */
+.image-section {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.image-section img {
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+}
+
+/* FOOTER */
+.footer {
+    background: #2e7d32;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+.box {
+margin: auto;
+width: 400px;
+height: 80px;
+background-color: lightgreen;
+border: 4px solid green;
+}
+h2 {
+margin: left;
+width: 500x;
+height: 125;
+background-color: #00cc66;
+border: 4px solid green;
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+ul li {
+  float: left;
+}
+
+ul li a {
+  display: block;
+  color: black;
+  text-align: centre;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  background-color: #009933;
+}
+.active {
+  text-decoration: underline;
+}
+.dropdown {
+  position: relative;
+}
+
+/* Style the dropdown button */
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Dropdown content */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside dropdown content */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #f1f1f1
+}
+
+/* Show the dropdown content on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change background color of dropdown button on hover */
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+.circle {
+    border: 2px solid red;
+    background-color: #FFFFFF;
+    height: 100px;
+    border-radius:50%;
+    width: 100px;
+}
+.cup-container {
+  position: absolute;
+  top: 150px;    /* adjust vertical position */
+  right: 20px;   /* distance from right edge */
+  width: 180px;  /* width of cup */
+  height: 220px; /* height of cup */
+  overflow: hidden; /* prevent overflow */
+}
+ 
+.cup-container video {
+  width: 110%; /* slightly bigger to cover area */
+  height: auto;
+  object-fit: cover;
+  object-position: center top; /* adjust as needed */
+  position: relative;
+  top: -15px; /* shift video upwards */
+  left: -5px; /* shift video left */
+  border-radius: 10px; /* optional */
+}
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    margin: 0; padding: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background: white;
+    border: 2px solid var(--primary-green);
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s;
+}
+
+.product-card:hover { transform: translateY(-5px); }
+
+/* Accessibility Focus State */
+button:focus, input:focus {
+    outline: 3px solid var(--accent-orange);
+    outline-offset: 2px;
+}
+
+button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+:root {
+    --primary-green: #2d5a27;
+    --accent-orange: #d45d00;
+    --text-dark: #333;
+    --bg-light: #f9f9f9;
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.rbox {
+margin: right;
+width: 400px;
+height: 150px;
+background-color: #2db300;
+border: 4px solid green;
+}
+.lbox {
+margin: left;
+width: 400px;
+height: 150px;
+background-color: #2db300;
+border: 4px solid green;
+}
+
+.producer-entry {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border: 4px solid green;
+    margin: 20px auto;
+    padding: 20px;
+    gap: 25px;
+    width: 90%;
+}
+
+.producer-entry img {
+    width: 300px;
+    height: auto;
+    border: 2px solid #00cc66;
+}
+
+.text-content {
+    flex: 1;
+}
+
+.btn {
+    background-color: #b32d00;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.nav-container {
+    display: flex;
+    align-items: center; /* Vertically centers logo with text */
+    justify-content: space-between; /* Logo on left, Menu on right */
+    background-color: #00ff00;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.logo img {
+    height: 60px; 
+    width: auto;  /* Maintains aspect ratio */
+    display: block;
+}
+
+
+here is all my code for the php files being, index, about, login, dashboard, logout, order, cart, checkout, process payment, history, contact and style.css is there any updates to functionality or styling that could be beneficial
