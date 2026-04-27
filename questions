@@ -1,0 +1,65 @@
+Part 1: Non-Technical (General User Experience)
+These focus on how the site feels and if it meets the needs of a local shopper.
+
+Can you find the "About" page from the home screen in less than three seconds?
+
+Is the contrast between the green background and white text easy for you to read?
+
+When you add an item to the cart, is the "Success" message clear enough?
+
+Does the "Order" page look organized, or are there too many products on the screen at once?
+
+Is it clear that you have to be logged in before you can see your order history?
+
+Are the images of the farm produce high-quality enough to make you want to buy them?
+
+If you were a producer, would you find the "Stock Management" table easy to understand?
+
+Does the "Delivery" vs "Collection" choice on the checkout page make sense to you?
+
+Is the "Loyalty Points" reward explained well enough to encourage you to buy more?
+
+Are the buttons (Login, Register, Update) big enough to click easily on a mobile phone?
+
+Is the contact information easy to find if you have a problem with an order?
+
+Does the website feel like a "local hub," or does it feel like a generic online shop?
+
+If you forgot your password, is there a clear way to get help on the login page?
+
+Does the "Cart" page show you a clear breakdown of the price before you pay?
+
+When you click "About," do the different farm descriptions help you trust the food quality?
+
+Part 2: Technical (Database & System Integrity)
+These are for the technical audience who can check the database to see if the site is working correctly.
+
+Look at the users table: Are the passwords stored as long scrambled strings (hashed) or can you read them?
+
+In the orders table: Does the total_price column correctly include the £2.50 fee when "Delivery" is chosen?
+
+Check the products table: When a producer updates a stock level on the website, does the number change instantly in the database?
+
+Look at the users table after a purchase: Did the points column increase by the correct amount (1 point per £1 spent, rounded down)?
+
+In the orders table: Are the items listed as a single readable string (e.g., "Apple (x2), Steak (x1)")?
+
+Does the order_date column in the database record the exact time the "Complete Purchase" button was clicked?
+
+Look at the products table: If a new producer registers, are all 13 default items (wheat, honey, etc.) automatically added for them with 0 stock?
+
+If you try to register a second user with a username that already exists in the database, does the website stop you?
+
+Check the users table: Is there a specific column that correctly identifies if a person is a "customer" or a "producer"?
+
+In the orders table: Is the username linked correctly to the person who actually made the purchase?
+
+Does the checkout form prevent you from moving forward if the "Card Number" box has fewer than 12 digits?
+
+When a producer changes a stock level to a negative number, does the database allow it or does the website block it?
+
+Look at the orders table: Is the "Delivery Method" saved exactly as it was selected on the form?
+
+After clicking "Logout," if you try to use the "Back" button in the browser, does the database session stay closed?
+
+Does the total_price in the database use a format that allows for pence (like 10.50) or is it only whole numbers?
