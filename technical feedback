@@ -1,0 +1,95 @@
+"Using 33 data points from seven participants, I evaluated both quantitative and qualitative aspects. Even though the Logic Validation had a score of 100%, the UX Analysis showed that the size of the UI was too big. Using this information, I created plans for refactoring CSS Grid and performing an accessibility check on my color scheme."
+
+1. Executive Data Summary
+
+This document contains detailed analyses based on the feedback that was received from
+technical auditors and general users on April 28, 2026, regarding the Greenfield Local
+Hub (GLH) web application.
+
+7
+Respondent Total
+
+4.3 / 5
+Average Rating of System
+
+100%
+Logic Validation
+
+2. UX Analysis
+
+2.1 Scaling & Real Estate of UI Elements
+One pattern that is prevalent in the qualitative analysis is the issue regarding the
+scaling of the Navigation Bar. According to respondents like Stanley, Josh, and Evie-
+Mae, the Navbar takes up too much space. "In terms of UX, this means 'interface
+crowding', meaning it will distract from its main task, which is choosing products."
+"The nav bar was too large... make the navbar smaller and more fitted." - Stanley
+Thompson-Thorn
+2.2 User Interaction Patterns
+The use of the Dropdown menu to order was found problematic by respondent Danil
+Vassiljev. Scrolling through the menu is considered difficult and unnecessary since the
+open grid would allow seeing all produce in one look.
+
+3. Back-end & Database Integrity Analysis
+
+3.1 Code-to-Database Mapping
+The technical audience conducted a "white box" assessment of the code's back end database parts. One positive finding is Naming Convention Synchronicity. The fact that there is consistency between identifiers in the SQL schema and the file names in PHP greatly aids maintainability.
+
+Technical Findings:
+Password Hashing: Confirmed to be functional and secure (non-plaintext).
+Relationships: Orders are correctly tied to 'username' fields, including appropriate
+foreign key usage.
+Computed Columns: Correct total calculation logic applies the delivery charge of
+£2.50 in case of 'method' = 'Delivery'.
+
+4. Summary Chart of Comparisons
+
+Category
+
+Observation
+Result
+
+Technical Assessment
+
+Visual Branding
+
+Positive "Local
+Vibe"
+
+Photos satisfied the brief for a community
+hangout aesthetic.
+
+Interface Design
+
+Clumsy/Overly Large
+
+Excessive CSS height/padding definitions violate
+responsive web design principles.
+
+Data Matching
+
+Exactly Right
+
+Calculation of loyalty points using floor math matches frontend
+values 100%.
+
+Usability
+
+Improvement Needed
+
+Hex color codes too bright to pass contrast
+ratios for accessibility compliance.
+
+
+
+5. Changes to be Implemented
+
+After analyzing these 33 data points, the following changes are recommended for
+the next development phase:
+Frontend UI Cleanup: Cut Navbar vertical padding in half and implement a
+sticky header.
+Back-end Database Design Changes: Include a status flag on orders to indicate
+delivery/collection status.
+User Interface Redesign: Use an <input> instead of "dropdown-content" on the CSS
+Grid system to create product cards.
+Accessibility Audit: Move away from a strong green color scheme (for instance,
+#2d5a27) as it hinders text legibility.
