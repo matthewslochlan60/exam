@@ -1,0 +1,24 @@
+Looking at all the feedback, it is clear that we have a classic &#39;Developer vs. User&#39; situation on
+our hands. On the technical side, the project is a total win. The database is secure, the math
+for delivery fees and loyalty points is perfect, and the code is organized so well that any
+other developer could jump in and understand it immediately.
+However, once real people started using the site, we discovered that &#39;working perfectly&#39;
+isn&#39;t the same thing as &#39;feeling easy to use.&#39; The biggest takeaway was definitely the
+navigation bar. Stanley, Josh, and Evie-Mae all felt it was way too big, almost like a wall
+blocking them from seeing the products. The lesson here is that people visit the site to shop,
+not to stare at a giant header. By shrinking that bar and making it &#39;sticky,&#39; we can keep the
+navigation handy without it getting in the way of the actual farm produce.
+We also learned a lot about how people want to browse. Danil pointed out that using
+dropdown menus to pick items is a bit like trying to read a restaurant menu through a
+keyhole—you can only see one thing at a time. To fix this, moving to a grid layout would be
+a game-changer. It would turn the shop into a digital farmer&#39;s market where everything is
+on display at once, making it much more visual and inviting.
+Maison Bond brought up a great point about the loyalty points. Even though the logic
+behind the points is solid, the explanation of why they matter isn&#39;t quite persuasive enough
+yet. It is a good reminder that even the best features need a bit of &#39;marketing&#39; to make users
+actually want to use them. Combined with the feedback about the &#39;bright green&#39; being a bit
+hard on the eyes, we have a clear path forward.
+Moving into Phase 2, we aren&#39;t looking to fix &#39;broken&#39; code—because the code isn&#39;t broken.
+Instead, we are going to focus on the polish. By darkening the green for better readability,
+slimming down the header, and adding those smooth animations users asked for, we can
+take a technically perfect system and make it a pleasure to use for the local community.
