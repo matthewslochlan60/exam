@@ -93,3 +93,32 @@ User Interface Redesign: Use an <input> instead of "dropdown-content" on the CSS
 Grid system to create product cards.
 Accessibility Audit: Move away from a strong green color scheme (for instance,
 #2d5a27) as it hinders text legibility.
+
+
+
+This analysis reveals an important discrepancy between the theoretical and practical
+usability of the site. While technically everything is impeccable – the database is secure,
+calculations are correct, and logical connections make perfect sense – as soon as actual
+users began to navigate the site, it turned out that the ability of a site to work perfectly well
+is not always equal to its ability to satisfy users.
+Among other problems, it can be noted that there were some serious concerns about the
+navigation bar. Both Stanley, Josh, and Evie-Mae considered the navigation bar too
+distracting and too large. With such a big header, the page becomes almost a barricade that
+prevents the user from seeing the products he or she wants to examine. In fact, people come
+to buy something and not admire the logo, so it makes sense to shrink the bar and make it
+sticky.
+Another important lesson learned from the feedback was provided by Danil regarding the
+dropdown menus. Selecting goods with the use of a drop-down is like reading a menu from
+a restaurant through a keyhole – you are seeing one item at a time. However, shopping is
+visual, which means that switching to a CSS Grid will transform the website into a vibrant
+online farmers&#39; market.
+However, not everything was about criticisms – the inner workings of the project received a
+perfect grade. As noticed by Evie-Mae, there is no difference between the columns of the
+database and the PHP files – they use the same terminology which ensures that the
+programming is neat, professional, and easily manageable. Regardless if it is a £2.50
+delivery fee or logic behind collecting loyalty points – the mind of the website does not
+make mistakes.
+Last but not least, the advice regarding the bright green color served as a wake-up call.
+When using too intense of a background color, white font tends to tremble and fade. Thus,
+for elderly visitors and those with eye problems, the website may become impossible to
+read. Switching to more natural Forest Green color will definitely improve this problem.
